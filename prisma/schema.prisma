@@ -7,3 +7,43 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id        String       @id
+  email     String?
+  name      String?
+  imageUrl  String
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  teams     TeamOnUser[]
+  Task      Task[]
+}
+
+model Team {
+  id        Int          @id @default(autoincrement())
+  name      String
+  members   TeamOnUser[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  Task      Task[]
+}
+
+model TeamOnUser {
+  userId String
+  teamId Int
+
+  user User @relation(fields: [userId], references: [id])
+  team Team @relation(fields: [teamId], references: [id])
+
+  @@id([userId, teamId])
+}
+
+model Task {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String?
+  dueDate     DateTime?
+  assigneeId  String?
+  assignedTo  User?     @relation(fields: [assigneeId], references: [id])
+  teamId      Int?
+  team        Team?     @relation(fields: [teamId], references: [id])
+}
