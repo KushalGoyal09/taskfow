@@ -16,15 +16,20 @@ model User {
   updatedAt DateTime     @updatedAt
   teams     TeamOnUser[]
   Task      Task[]
+  AdminTeam Team[]
+  Project   Project[]
 }
 
 model Team {
   id        Int          @id @default(autoincrement())
   name      String
+  adminId   String
+  admin     User         @relation(fields: [adminId], references: [id])
   members   TeamOnUser[]
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
   Task      Task[]
+  Project   Project[]
 }
 
 model TeamOnUser {
@@ -46,4 +51,22 @@ model Task {
   assignedTo  User?     @relation(fields: [assigneeId], references: [id])
   teamId      Int?
   team        Team?     @relation(fields: [teamId], references: [id])
+  Project     Project?  @relation(fields: [projectId], references: [id])
+  projectId   Int?
+}
+
+model Project {
+  id     Int         @id @default(autoincrement())
+  type   ProjectType
+  userId String
+  teamId Int
+  name   String
+  tasks  Task[]
+  user   User        @relation(fields: [userId], references: [id])
+  team   Team        @relation(fields: [teamId], references: [id])
+}
+
+enum ProjectType {
+  Individual
+  Team
 }
